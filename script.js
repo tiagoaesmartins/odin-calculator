@@ -1,48 +1,88 @@
-const add = (sum1, sum2) => {
-    return sum1 + sum2;
-};
-
-const subtract = (sub1, sub2) => {
-    return sub1 - sub2;
-};
-
-const multiply = (times1, times2) => {
-    return times1 * times2;
-};
-
-const divide = (div1, div2) => {
-
-    if(div2 === 0) {
-        return "You think you're so clever, huh?";
-    } else {
-        return div1 / div2;
-    };
-};
-
-let firstNum = 0;
-let secondNum = 0;
+let firstNumber = "";
 let operator = "";
+let secondNumber = "";
+let result = "";
 
-const operate = (num1, num2, op) => {
-    if (op == "+") {
-        let addition = add(num1, num2);
-        num1 = addition;
-        return num1;
-    } else if (op == "-") {
-        let subtraction = subtract(num1, num2);
-        num1 = subtraction;
-        return num1;
-    } else if (op == "*") {
-        let multiplication = multiply(num1, num2);
-        num1 = multiplication;
-        return num1;
-    } else if (op == "/") {
-        let division = divide(num1, num2);
-        num1 = division;
-        return num1;
+const screen = document.querySelector(".screen");
+
+function updateScreen() {
+    if (operator === "") {
+      screen.textContent = firstNumber;
+    } else if (secondNumber === "" && operator !== "") {
+      screen.textContent = "";
+    } else if (secondNumber === "0" && operator === "/") {
+        screen.textContent = "Can't be done, mate. Click C!";
+    } else {
+      screen.textContent = secondNumber;
     };
+  };
+  
 
-    
+function clearScreen() {
+    firstNumber = "";
+    operator = "";
+    secondNumber = "";
+    result = "";
+    updateScreen();
 }
 
-console.log(operate(0, 3, "/"))
+function operate() {
+    let tempResult;
+    switch (operator) {
+      case "+":
+        tempResult = parseFloat(firstNumber) + parseFloat(secondNumber);
+        break;
+      case "-":
+        tempResult = parseFloat(firstNumber) - parseFloat(secondNumber);
+        break;
+      case "x":
+        tempResult = parseFloat(firstNumber) * parseFloat(secondNumber);
+        break;
+      case "/":
+        if(secondNumber == "0") {
+        updateScreen();
+        };
+        tempResult = parseFloat(firstNumber) / parseFloat(secondNumber);
+        break;
+      default:
+        tempResult = "";
+    };
+
+    result = (tempResult % 1 !== 0) ? tempResult.toFixed(2) : String(tempResult);
+    firstNumber = result;
+    operator = "";
+    secondNumber = "";
+  };
+
+document.querySelectorAll(".btn-num").forEach(button => {
+    button.addEventListener("click", function() {
+    if (operator === "") {
+        firstNumber += this.textContent;
+    } else {
+        secondNumber += this.textContent;
+    };
+    updateScreen();
+    });
+});
+
+document.querySelectorAll(".btn-op").forEach(button => {
+    button.addEventListener("click", function() {
+    if (firstNumber !== "" && secondNumber !== "") {
+        operate();
+    };
+    operator = this.textContent;
+    updateScreen();
+    });
+});
+
+document.getElementById("equal").addEventListener("click", function() {
+    if (firstNumber !== "" && secondNumber !== "") {
+    operate();
+    screen.textContent = result;
+    };
+});
+
+document.getElementById("clear").addEventListener("click", function() {
+    clearScreen();
+});
+
